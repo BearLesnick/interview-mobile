@@ -1,0 +1,1 @@
+enum BlocStatus { idle, loading }

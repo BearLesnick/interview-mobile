@@ -1,0 +1,26 @@
+name: encrypt
+description: App for test encryption
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rxdart: 0.24.1
+  provider: 4.3.2
+  equatable: 1.2.3
+  rsa_encrypt: 1.0.4
+  shared_preferences: 0.5.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: 4.1.1
+
+flutter:
+  uses-material-design: true
