@@ -15,14 +15,14 @@ class TextInputWidget extends StatefulWidget {
 }
 
 class _TextInputWidgetState extends State<TextInputWidget> {
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   bool shouldDisplayClearButton = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.controller.text.length != 0) {
+    if (widget.controller.text.isNotEmpty) {
       shouldDisplayClearButton = true;
     }
     subscribeOnController();
@@ -30,7 +30,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
 
   @override
   void didUpdateWidget(TextInputWidget oldWidget) {
-    if (oldWidget.controller != this.widget.controller) {
+    if (oldWidget.controller != widget.controller) {
       oldWidget.controller?.removeListener(buttonDisplayingListener);
       subscribeOnController();
     }
@@ -42,11 +42,11 @@ class _TextInputWidgetState extends State<TextInputWidget> {
   }
 
   void buttonDisplayingListener() {
-    if (widget.controller.text.length != 0 && !shouldDisplayClearButton) {
+    if (widget.controller.text.isNotEmpty && !shouldDisplayClearButton) {
       setState(() {
         shouldDisplayClearButton = true;
       });
-    } else if (widget.controller.text.length == 0 && shouldDisplayClearButton) {
+    } else if (widget.controller.text.isEmpty && shouldDisplayClearButton) {
       setState(() {
         shouldDisplayClearButton = false;
       });
@@ -64,11 +64,11 @@ class _TextInputWidgetState extends State<TextInputWidget> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
-        children: [
+        children: <Widget>[
           TextField(
             focusNode: _focusNode,
             controller: widget.controller,
-            decoration: InputDecoration(focusColor: Colors.black),
+            decoration: const InputDecoration(focusColor: Colors.black),
             maxLength: 60,
             onSubmitted: widget.onSubmitted,
           ),
@@ -76,7 +76,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             Align(
                 alignment: Alignment.centerRight,
                 child: IconButton(
-                  icon: Icon(Icons.cancel),
+                  icon: const Icon(Icons.cancel),
                   onPressed: () {
                     widget.controller.text = "";
                     _focusNode.unfocus();

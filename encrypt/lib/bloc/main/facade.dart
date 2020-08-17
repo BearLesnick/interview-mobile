@@ -3,13 +3,14 @@ import 'package:encrypt/infrastructure/encryption/rsa_encrypt_pair.dart';
 import 'package:encrypt/infrastructure/encryption/rsa_key_pair_generator.dart';
 import 'package:encrypt/infrastructure/encryption/rsa_string_encryptor.dart';
 import 'package:encrypt/infrastructure/key_value_storage.dart';
+
 class MainBlocFacade {
   static const String _PublicKeyKey = "public_key_key";
   static const String _PrivateKeyKey = "private_key_key";
 
   final KeyValueStorage _storage;
 
-  //TODO(Zaika): dependency inversion, replace by abstraction
+  // TODO(Zaika): dependency inversion, replace by abstraction
   final RSAKeyPairGenerator _generator;
 
   final RSAStringEncryptingService _encryptingService;
@@ -17,8 +18,8 @@ class MainBlocFacade {
   MainBlocFacade(this._storage, this._generator, this._encryptingService);
 
   Future<KeyPair> getStoredKeyPair() async {
-    String publicKey = await _storage.getString(key: _PublicKeyKey);
-    String privateKey = await _storage.getString(key: _PrivateKeyKey);
+    final String publicKey = await _storage.getString(key: _PublicKeyKey);
+    final String privateKey = await _storage.getString(key: _PrivateKeyKey);
     if (publicKey != null && privateKey != null) {
       return KeyPair(privateKey: privateKey, publicKey: publicKey);
     } else
@@ -36,8 +37,8 @@ class MainBlocFacade {
   }
 
   Future<KeyPair> generateKeyPair() async {
-    RSAEncryptKeyPair pair = await _generator.generate();
-    KeyPair stringPair = await _generator.convertPairToString(pair);
+    final RSAEncryptKeyPair pair = await _generator.generate();
+    final KeyPair stringPair = await _generator.convertPairToString(pair);
     await storeKeyPair(stringPair);
     return stringPair;
   }

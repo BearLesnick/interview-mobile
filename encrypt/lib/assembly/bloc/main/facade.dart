@@ -5,7 +5,7 @@ import 'package:encrypt/infrastructure/key_value_storage.dart';
 import 'package:encrypt/meta/di/container.dart';
 
 class MainBlocFacadeFactory {
-  //TODO(Zaika): use di to get encrypting classes
+  // TODO(Zaika): use di to get encrypting classes
   MainBlocFacade create(DIContainer container) => MainBlocFacade(
         container.get<KeyValueStorage>(),
         RSAKeyPairGenerator(),

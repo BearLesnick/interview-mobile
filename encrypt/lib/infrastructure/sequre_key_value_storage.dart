@@ -2,7 +2,7 @@ import 'package:encrypt/infrastructure/key_value_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesKeyValueStorage implements KeyValueStorage {
- final  SharedPreferences preferences;
+  final SharedPreferences preferences;
 
   PreferencesKeyValueStorage(this.preferences);
 

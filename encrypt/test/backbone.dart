@@ -4,7 +4,7 @@ Future<void> reschedule({int times}) async {
   } else if (times < 1) {
     throw ArgumentError("Times must me positive");
   } else {
-    for (var i = 0; i < times; i++) {
+    for (int i = 0; i < times; i++) {
       await reschedule();
     }
   }

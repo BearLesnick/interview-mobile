@@ -1,5 +1,6 @@
 import 'package:encrypt/flutter/page/main/page.dart';
 import 'package:encrypt/infrastructure/key_value_storage.dart';
+import 'package:encrypt/meta/message_registry.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,16 +14,16 @@ class ProviderDiApplication extends StatefulWidget {
 }
 
 class _ProviderDiApplicationState extends State<ProviderDiApplication> {
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
+      providers: <Provider<dynamic>>[
         Provider<KeyValueStorage>.value(
           value: widget.storage,
           updateShouldNotify: (KeyValueStorage first, KeyValueStorage second) =>
               first != second,
         ),
+        Provider<MessagesRegistry>.value(value: ConstMessagesRegistry()),
       ],
       child: MaterialApp(
         home: MainPage(),

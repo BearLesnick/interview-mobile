@@ -7,7 +7,7 @@ import 'backbone.dart';
 import 'mock.dart';
 
 void main() {
-  MockMainBlocFacade mockFacade = MockMainBlocFacade();
+  final MockMainBlocFacade mockFacade = MockMainBlocFacade();
 
   setUp(() {
     mockFacade.givesNothing();
@@ -19,7 +19,7 @@ void main() {
   MainPageBloc createTestSubject() => MainPageBloc(mockFacade);
   group("Creating", () {
     test("Assert that initial state emitted", () {
-      MainPageBloc subject = createTestSubject();
+      final MainPageBloc subject = createTestSubject();
       expect(subject.stateStream,
           emits(predicate((MainPageBlocState state) => state.isLoading)));
     });
@@ -33,7 +33,7 @@ void main() {
       final KeyPair givenKeyPair =
           KeyPair(publicKey: "publicKey", privateKey: "privateKey");
       mockFacade.givesStored(givenKeyPair);
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       await reschedule(times: 3);
       expect(
           bloc.stateStream,
@@ -45,7 +45,7 @@ void main() {
     test(
         "Assert that generate method of facade"
         " was called after bloc generate method was called", () async {
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       await reschedule(times: 1);
       bloc.generateKeyPair();
       await reschedule(times: 1);
@@ -55,7 +55,7 @@ void main() {
       final KeyPair givenKeyPair =
           KeyPair(publicKey: "publicKey", privateKey: "privateKey");
       mockFacade.generatesKeyPair(givenKeyPair);
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       await reschedule(times: 1);
       bloc.generateKeyPair();
       await reschedule(times: 3);
@@ -66,9 +66,9 @@ void main() {
     });
     test("Assert that error is added to state if generate method gives error",
         () async {
-      Exception givenException = Exception();
+      final Exception givenException = Exception();
       mockFacade.generationGivesError(givenException);
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       await reschedule(times: 1);
       bloc.generateKeyPair();
       await reschedule(times: 3);
@@ -84,7 +84,7 @@ void main() {
       final KeyPair givenKeyPair =
           KeyPair(publicKey: "publicKey", privateKey: "privateKey");
       mockFacade.generatesKeyPair(givenKeyPair);
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       bloc.generateKeyPair();
       await reschedule(times: 3);
       bloc.viewPrivateKey();
@@ -99,7 +99,7 @@ void main() {
       final KeyPair givenKeyPair =
           KeyPair(publicKey: "publicKey", privateKey: "privateKey");
       mockFacade.generatesKeyPair(givenKeyPair);
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       bloc.generateKeyPair();
       await reschedule(times: 3);
       bloc.viewPublicKey();
@@ -112,9 +112,9 @@ void main() {
     test("Assert that encrypt method called on text record add", () async {
       final KeyPair givenKeyPair =
           KeyPair(publicKey: "publicKey", privateKey: "privateKey");
-      String givenText = "givenText";
+      const String givenText = "givenText";
       mockFacade.generatesKeyPair(givenKeyPair);
-      MainPageBloc bloc = createTestSubject();
+      final MainPageBloc bloc = createTestSubject();
       bloc.generateKeyPair();
       await reschedule(times: 3);
       bloc.makeRecord(givenText);
@@ -126,24 +126,20 @@ void main() {
 
 extension _EmptyResultsFixture on MockMainBlocFacade {
   void givesNothing() {
-    when(this.getStoredKeyPair())
-        .thenAnswer((realInvocation) => Future.value(null));
-    when(this.generateKeyPair())
-        .thenAnswer((realInvocation) => Future.value(null));
-    when(this.encryptMessage(any, any))
-        .thenAnswer((realInvocation) => Future.value(null));
+    when(getStoredKeyPair()).thenAnswer((_) => Future<KeyPair>.value(null));
+    when(generateKeyPair()).thenAnswer((_) => Future<KeyPair>.value(null));
+    when(encryptMessage(any, any))
+        .thenAnswer((_) => Future<String>.value(null));
   }
 
   void generatesKeyPair(KeyPair pair) {
-    when(this.generateKeyPair())
-        .thenAnswer((realInvocation) => Future.value(pair));
+    when(generateKeyPair()).thenAnswer((_) => Future<KeyPair>.value(pair));
   }
 
   void givesStored(KeyPair pair) {
-    when(this.getStoredKeyPair())
-        .thenAnswer((realInvocation) => Future.value(pair));
+    when(getStoredKeyPair()).thenAnswer((_) => Future<KeyPair>.value(pair));
   }
 
-  void generationGivesError(Object exception) => when(this.generateKeyPair())
-      .thenAnswer((realInvocation) => Future.error(exception));
+  void generationGivesError(Object exception) => when(generateKeyPair())
+      .thenAnswer((_) => Future<KeyPair>.error(exception));
 }
