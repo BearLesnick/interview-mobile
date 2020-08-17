@@ -1,26 +1,24 @@
-import 'dart:convert';
-
-import 'package:encrypt/bloc/main/keyPair.dart';
+import 'package:encrypt/bloc/main/key_pair.dart';
 import 'package:encrypt/infrastructure/encryption/rsa_encrypt_pair.dart';
 import 'package:encrypt/infrastructure/encryption/rsa_key_pair_generator.dart';
 import 'package:encrypt/infrastructure/encryption/rsa_string_encryptor.dart';
 import 'package:encrypt/infrastructure/key_value_storage.dart';
 class MainBlocFacade {
-  static const String PublicKeyKey = "public_key_key";
-  static const String PrivateKeyKey = "private_key_key";
+  static const String _PublicKeyKey = "public_key_key";
+  static const String _PrivateKeyKey = "private_key_key";
 
-  final KeyValueStorage storage;
+  final KeyValueStorage _storage;
 
   //TODO(Zaika): dependency inversion, replace by abstraction
-  final RSAKeyPairGenerator generator;
+  final RSAKeyPairGenerator _generator;
 
   final RSAStringEncryptingService _encryptingService;
 
-  MainBlocFacade(this.storage, this.generator, this._encryptingService);
+  MainBlocFacade(this._storage, this._generator, this._encryptingService);
 
-  Future<KeyPair> getKeyPair() async {
-    String publicKey = await storage.getString(key: PublicKeyKey);
-    String privateKey = await storage.getString(key: PrivateKeyKey);
+  Future<KeyPair> getStoredKeyPair() async {
+    String publicKey = await _storage.getString(key: _PublicKeyKey);
+    String privateKey = await _storage.getString(key: _PrivateKeyKey);
     if (publicKey != null && privateKey != null) {
       return KeyPair(privateKey: privateKey, publicKey: publicKey);
     } else
@@ -29,17 +27,17 @@ class MainBlocFacade {
 
   Future<String> encryptMessage(String plainText, String publicKey) async {
     return _encryptingService.encrypt(
-        plainText, await generator.publicKeyFromString(publicKey));
+        plainText, await _generator.publicKeyFromString(publicKey));
   }
 
   Future<void> storeKeyPair(KeyPair pair) async {
-    storage.putString(key: PublicKeyKey, value: pair.publicKey);
-    storage.putString(key: PrivateKeyKey, value: pair.privateKey);
+    _storage.putString(key: _PublicKeyKey, value: pair.publicKey);
+    _storage.putString(key: _PrivateKeyKey, value: pair.privateKey);
   }
 
   Future<KeyPair> generateKeyPair() async {
-    RSAEncryptKeyPair pair = await generator.generate();
-    KeyPair stringPair = await generator.convertPairToString(pair);
+    RSAEncryptKeyPair pair = await _generator.generate();
+    KeyPair stringPair = await _generator.convertPairToString(pair);
     await storeKeyPair(stringPair);
     return stringPair;
   }

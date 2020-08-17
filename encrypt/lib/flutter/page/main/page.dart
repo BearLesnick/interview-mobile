@@ -24,4 +24,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return MainPageWidget(bloc: _bloc);
   }
+  @override
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
+  }
 }

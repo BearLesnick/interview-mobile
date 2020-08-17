@@ -63,8 +63,10 @@ class MainPageWidget extends StatelessWidget {
           textColor: Colors.blue,
           text: "Encrypt Text",
           onTap: () {
-            bloc.makeRecord(_textToEncryptController.text);
-            _textToEncryptController.value = TextEditingValue.empty;
+            if (_textToEncryptController.value != null) {
+              bloc.makeRecord(_textToEncryptController.text);
+              _textToEncryptController.value = TextEditingValue.empty;
+            }
           }),
     );
   }
@@ -108,15 +110,13 @@ class MainPageWidget extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (state.records != null)
-                      ...state.records
-                          ?.map<Widget>((String record) => Text(record))
-                  ],
-                ),
+              child: ListView(
+                reverse: true,
+                children: [
+                  if (state.records != null)
+                    ...state.records.reversed
+                        ?.map<Widget>((String record) => Text(record))
+                ],
               ),
             )
           ],
@@ -134,6 +134,9 @@ class MainPageWidget extends StatelessWidget {
         children: [
           //TODO(Zaika): implement messages registry
           MainButton(
+            isActive: !state.hasKeyPair,
+            borderColor: !state.hasKeyPair ? Colors.blue : Colors.grey,
+            backgroundColor: !state.hasKeyPair ? Colors.blue : Colors.grey,
             text: "Generate Key Pair",
             onTap: () => bloc.generateKeyPair(),
           ),

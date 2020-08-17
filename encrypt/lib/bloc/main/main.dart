@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:encrypt/bloc/main/facade.dart';
-import 'package:encrypt/bloc/main/keyPair.dart';
+import 'package:encrypt/bloc/main/key_pair.dart';
 import 'package:encrypt/meta/bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -23,7 +23,7 @@ class MainPageBloc {
     _eventSubscription = _eventSubject.stream.listen((MainPageEvent event) {
       _stateSubject.value = event.reduce(_stateSubject.value);
     });
-    _eventSink.add(_InitialEvent(_eventSink, _facade.getKeyPair));
+    _eventSink.add(_InitialEvent(_eventSink, _facade.getStoredKeyPair));
   }
 
   void dispose() {
@@ -58,9 +58,13 @@ class _MakeRecordEvent implements MainPageEvent {
 
   @override
   MainPageBlocState reduce(MainPageBlocState state) {
-    _facade.encryptMessage(plainText, state.keyPair.publicKey).then(
-        (String cipherText) => _eventSink.add(_MessageAddedEvent(cipherText)));
-    return state.copyWith(status: BlocStatus.loading);
+    if (plainText != null && plainText.isNotEmpty) {
+      _facade.encryptMessage(plainText, state.keyPair.publicKey).then(
+          (String cipherText) =>
+              _eventSink.add(_MessageAddedEvent(cipherText)));
+      return state.copyWith(status: BlocStatus.loading);
+    }
+    return state;
   }
 }
 
@@ -73,6 +77,17 @@ class _MessageAddedEvent implements MainPageEvent {
   MainPageBlocState reduce(MainPageBlocState state) {
     return state.copyWith(
         status: BlocStatus.idle, records: state.records..add(cipherText));
+  }
+}
+
+class _PairGenerationErrorEvent implements MainPageEvent {
+  final Object error;
+
+  _PairGenerationErrorEvent(this.error);
+
+  @override
+  MainPageBlocState reduce(MainPageBlocState state) {
+    return state.copyWith(error: error, status: BlocStatus.idle);
   }
 }
 
@@ -96,14 +111,15 @@ class _InitialEvent implements MainPageEvent {
 class _ShowPrivateKeyEvent implements MainPageEvent {
   @override
   MainPageBlocState reduce(MainPageBlocState state) {
-    return state.copyWith(records: <String>[state.keyPair.privateKey]);
+    return state.copyWith(
+        records: state.records..add(state.keyPair.privateKey));
   }
 }
 
 class _ShowPublicKeyEvent implements MainPageEvent {
   @override
   MainPageBlocState reduce(MainPageBlocState state) {
-    return state.copyWith(records: <String>[state.keyPair.publicKey]);
+    return state.copyWith(records: state.records..add(state.keyPair.publicKey));
   }
 }
 
@@ -115,10 +131,17 @@ class _GeneratePairEvent implements MainPageEvent {
 
   @override
   MainPageBlocState reduce(MainPageBlocState state) {
-    _facade.generateKeyPair().then(
-        (KeyPair pair) => _eventSink.add(_KeyPairReceivedStoreEvent(pair)));
+    if (state.keyPair == null) {
+      _facade
+          .generateKeyPair()
+          .then((KeyPair pair) =>
+              _eventSink.add(_KeyPairReceivedStoreEvent(pair)))
+          .catchError((Object error) =>
+              _eventSink.add(_PairGenerationErrorEvent(error)));
+      return state.copyWith(status: BlocStatus.loading);
+    }
 
-    return state.copyWith(status: BlocStatus.loading);
+    return state;
   }
 }
 
@@ -159,7 +182,7 @@ class MainPageBlocState {
 
   MainPageBlocState.initial()
       : this._(
-          null,
+          <String>[],
           null,
           BlocStatus.loading,
           null,

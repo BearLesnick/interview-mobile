@@ -1,4 +1,4 @@
-import 'package:encrypt/bloc/main/keyPair.dart';
+import 'package:encrypt/bloc/main/key_pair.dart';
 import 'package:encrypt/infrastructure/encryption/rsa_encrypt_pair.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'package:pointycastle/api.dart' as crypto;
