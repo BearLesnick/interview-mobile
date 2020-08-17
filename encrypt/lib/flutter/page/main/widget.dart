@@ -49,7 +49,10 @@ class MainPageWidget extends StatelessWidget {
       children: <Widget>[
         _buildButtonSection(context, messagesRegistry, snapshot.data),
         _buildSpacer(context),
-        TextInputWidget(controller: _textToEncryptController),
+        TextInputWidget(
+          controller: _textToEncryptController,
+          onSubmitted: submitTextInput,
+        ),
         _buildSubmitButton(context),
         _buildTextField(context, snapshot.data),
       ],
@@ -61,16 +64,21 @@ class MainPageWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width / 4),
       child: MainButton(
-          backgroundColor: Colors.white,
-          textColor: Colors.blue,
-          text: messagesRegistry.encryptText(),
-          onTap: () {
-            if (_textToEncryptController.value != null) {
-              bloc.makeRecord(_textToEncryptController.text);
-              _textToEncryptController.value = TextEditingValue.empty;
-            }
-          }),
+        backgroundColor: Colors.white,
+        textColor: Colors.blue,
+        text: messagesRegistry.encryptText(),
+        onTap: () {
+          submitTextInput(_textToEncryptController.value.text);
+        },
+      ),
     );
+  }
+
+  void submitTextInput(String text) {
+    if (text != null) {
+      bloc.makeRecord(text);
+      _textToEncryptController.value = TextEditingValue.empty;
+    }
   }
 
   Widget _buildSpacer(BuildContext context) => Container(

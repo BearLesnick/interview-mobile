@@ -6,9 +6,12 @@ class TextInputWidget extends StatefulWidget {
   final void Function(String) onSubmitted;
   final TextEditingController controller;
 
-  const TextInputWidget(
-      {Key key, this.controller, this.maxLength = 60, this.onSubmitted})
-      : super(key: key);
+  const TextInputWidget({
+    Key key,
+    @required this.controller,
+    @required this.onSubmitted,
+    this.maxLength = 60,
+  }) : super(key: key);
 
   @override
   _TextInputWidgetState createState() => _TextInputWidgetState();
@@ -66,12 +69,14 @@ class _TextInputWidgetState extends State<TextInputWidget> {
       child: Stack(
         children: <Widget>[
           TextField(
-            focusNode: _focusNode,
-            controller: widget.controller,
-            decoration: const InputDecoration(focusColor: Colors.black),
-            maxLength: 60,
-            onSubmitted: widget.onSubmitted,
-          ),
+              focusNode: _focusNode,
+              controller: widget.controller,
+              decoration: const InputDecoration(focusColor: Colors.black),
+              maxLength: 60,
+              onSubmitted: (String text) {
+                widget?.onSubmitted(text);
+                _focusNode.unfocus();
+              }),
           if (shouldDisplayClearButton)
             Align(
                 alignment: Alignment.centerRight,
