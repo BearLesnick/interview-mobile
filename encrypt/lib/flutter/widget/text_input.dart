@@ -76,7 +76,10 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             Align(
                 alignment: Alignment.centerRight,
                 child: IconButton(
-                  icon: const Icon(Icons.cancel),
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: Colors.grey,
+                  ),
                   onPressed: () {
                     widget.controller.text = "";
                     _focusNode.unfocus();
